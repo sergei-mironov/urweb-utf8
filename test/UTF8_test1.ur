@@ -19,6 +19,8 @@ fun main {} : transaction page =
       Substr: {[substr s 0 99]} {[substr s 1 3]} {[substr s 0 6]}
       <br/>
       Tail: {[tail s]}
+      <br/>
+      MP:  {[mp toUpper s]}
     </body>
   </xml>
 

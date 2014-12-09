@@ -68,21 +68,31 @@ uw_Basis_string uw_UTF8_ffi_str(struct uw_context *ctx, uw_UTF8_ffi_uchar c)
   uint8_t *str = (uint8_t*)uw_malloc(ctx, 5);
   ssize_t ret = utf8proc_encode_char((int32_t)c, str);
   if(ret <= 0)
-    uw_error(ctx, FATAL, "UTF8::%s can't encode", __func__);
+    uw_error(ctx, FATAL, "UTF8::%s can't encode %d", __func__, c);
   str[ret] = 0;
   return (char*)str;
 }
 
 uw_UTF8_ffi_uchar uw_UTF8_ffi_toUpper(struct uw_context *ctx, uw_UTF8_ffi_uchar uc)
 {
+  if(uc == -1)
+    uw_error(ctx, FATAL, "UTF8::%s invalid character", __func__);
   const utf8proc_property_t *p = utf8proc_get_property(uc);
-  return p->uppercase_mapping;
+  uw_UTF8_ffi_uchar uc2 = p->uppercase_mapping;
+  if(uc2 == -1)
+    return uc;
+  return uc2;
 }
 
 uw_UTF8_ffi_uchar uw_UTF8_ffi_toLower(struct uw_context *ctx, uw_UTF8_ffi_uchar uc)
 {
+  if(uc == -1)
+    uw_error(ctx, FATAL, "UTF8::%s invalid character", __func__);
   const utf8proc_property_t *p = utf8proc_get_property(uc);
-  return p->lowercase_mapping;
+  uw_UTF8_ffi_uchar uc2 = p->lowercase_mapping;
+  if(uc2 == -1)
+    return uc;
+  return uc2;
 }
 
 uw_Basis_string uw_UTF8_ffi_substr(struct uw_context *ctx, uw_Basis_string str, uw_Basis_int start, uw_Basis_int len)
