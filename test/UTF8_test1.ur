@@ -9,18 +9,29 @@ fun main {} : transaction page =
   <xml>
     <head/>
     <body>
-      UTF8: {[ux]}
+      s => {[s]}
       <br/>
-      Basis: {[bx]}
+      strlen s => {[ux]}
       <br/>
-      At0: {[str (toLower (at s 0))]}
-      At2: {[str (toUpper (at s 2))]}
+      Basis.strlen => {[bx]}
       <br/>
-      Substr: {[substr s 0 99]} {[substr s 1 3]} {[substr s 0 6]}
+      str (toLower (at s 0)) => {[str (toLower (at s 0))]}
       <br/>
-      Tail: {[tail s]}
+      str (toUpper (at s 2)) => {[str (toUpper (at s 2))]}
       <br/>
-      MP:  {[mp toUpper s]}
+      substr s 0 99 => {[substr s 0 99]}
+      <br/>
+      substr s 1 3 => {[substr s 1 3]}
+      <br/>
+      substr s 0 6 => {[substr s 0 6]}
+      <br/>
+      tail s => {[tail s]}
+      <br/>
+      mp toUpper s => {[mp toUpper s]}
+      <br/>
+      <button value="Test client side" onclick={fn _ =>
+        alert ("len = " ^ (show (UTF8.strlen "12345")))
+      }/>
     </body>
   </xml>
 
