@@ -8,27 +8,30 @@ lib = do
   uwlib (file "lib.urp") $ do
     ffi (file "UTF8_ffi.urs")
     include (file "UTF8_ffi.h")
-    csrc' (file "UTF8_ffi.cpp") "-std=c++11" "-lstdc++ -lutf8proc"
+    src (file "UTF8_ffi.cpp","-std=c++11","-lstdc++ -lutf8proc")
     ur (sys "list")
-    ur (single (file "UTF8.ur"))
+    static "/UTF8_js/content" (file "UTF8.js")
+    script "/UTF8_js/content"
+    jsFunc "UTF8_ffi" "strlen" "utf8_strlen"
+    ur (file "UTF8.ur")
 
 mktest f bdy = do
-  l <- lib
   uwapp "-dbms sqlite" (f .= ".urp") $ do
     database ("dbname="++(takeBaseName f))
     sql (f.="sql")
-    library l
+    library lib
     ur (sys "list")
     ur (sys "char")
     ur (sys "string")
     bdy
-    ur (single f)
+    ur f
 
 main = do
-  writeMake (file "Makefile") $ do
+  writeDefaultMakefiles $ do
     rule $ do
       phony "lib"
       depend lib
+
     rule $ do
       phony "all"
       depend (mktest (file "test/UTF8_test1.ur") (return  ()))

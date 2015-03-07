@@ -8,54 +8,75 @@ unexport MAIN
 
 # Main section
 
-URCPP = $(shell $(shell urweb -print-ccompiler) -print-prog-name=g++)
-URINCL = -I$(shell urweb -print-cinclude) 
-URVERSION = $(shell urweb -version)
-.PHONY: all
-all: ./Makefile ./test/UTF8_test1.exe ./test/UTF8_test1.sql
-./test/UTF8_test1.exe: .fix-multy1
-./test/UTF8_test1.urp: ./Makefile ./lib.urp ./test/UTF8_test1.ur .cake3/tmp__testUTF8_test1_in
-	cat .cake3/tmp__testUTF8_test1_in > ./test/UTF8_test1.urp
-.cake3/tmp__testUTF8_test1_in: ./Makefile
-	-rm -rf .cake3/tmp__testUTF8_test1_in
-	echo 'database dbname=UTF8_test1' >> .cake3/tmp__testUTF8_test1_in
-	echo 'sql .././test/UTF8_test1.sql' >> .cake3/tmp__testUTF8_test1_in
-	echo 'library ../.' >> .cake3/tmp__testUTF8_test1_in
-	echo '' >> .cake3/tmp__testUTF8_test1_in
-	echo '$$/list' >> .cake3/tmp__testUTF8_test1_in
-	echo '$$/char' >> .cake3/tmp__testUTF8_test1_in
-	echo '$$/string' >> .cake3/tmp__testUTF8_test1_in
-	echo '.././test/UTF8_test1' >> .cake3/tmp__testUTF8_test1_in
-./lib.urp: ./Makefile ./UTF8.ur ./UTF8_ffi.h ./UTF8_ffi.o .cake3/tmp__lib_in
-	cat .cake3/tmp__lib_in > ./lib.urp
-.cake3/tmp__lib_in: ./Makefile
-	-rm -rf .cake3/tmp__lib_in
-	echo 'ffi ./UTF8_ffi' >> .cake3/tmp__lib_in
-	echo 'include ./UTF8_ffi.h' >> .cake3/tmp__lib_in
-	echo 'link ./UTF8_ffi.o' >> .cake3/tmp__lib_in
-	echo 'link -lstdc++ -lutf8proc' >> .cake3/tmp__lib_in
-	echo '' >> .cake3/tmp__lib_in
-	echo '$$/list' >> .cake3/tmp__lib_in
-	echo './UTF8' >> .cake3/tmp__lib_in
-.PHONY: lib
-lib: ./Makefile ./lib.urp
-./UTF8_ffi.o: ./Makefile ./UTF8_ffi.cpp $(call GUARD,URCPP) $(call GUARD,URINCL) $(call GUARD,UR_CFLAGS)
-	$(URCPP) -c $(UR_CFLAGS) $(URINCL) -std=c++11 -o ./UTF8_ffi.o ./UTF8_ffi.cpp
-./test/UTF8_test1.sql: .fix-multy1
-.INTERMEDIATE: .fix-multy1
-.fix-multy1: ./Makefile ./test/UTF8_test1.urp $(call GUARD,URVERSION)
-	urweb -dbms sqlite ./test/UTF8_test1
-$(call GUARD,URCPP):
-	rm -f .cake3/GUARD_URCPP_*
+URWEB = urweb
+UWCPP = $(shell $(shell $(URWEB) -print-ccompiler) -print-prog-name=g++)
+UWFLAGS = 
+UWINCLUDE = -I$(shell $(URWEB) -print-cinclude)
+UWVER = $(shell $(URWEB) -version)
+.PHONY: ./all
+./all: ./Makefile ./test/UTF8_test1.exe ./test/UTF8_test1.sql
+./.cake3/tmp___test_UTF8_test1_in_2: ./Makefile ./lib.urp ./test/UTF8_test1.ur
+	( \
+	echo   ;\
+	echo $$\/list  ;\
+	echo $$\/char  ;\
+	echo $$\/string  ;\
+	echo \.\.\/test\/UTF8\_test1  ;\
+	) > ./.cake3/tmp___test_UTF8_test1_in_2
+./.cake3/tmp___test_UTF8_test1_in_1: ./Makefile ./lib.urp ./test/UTF8_test1.ur
+	( \
+	echo database\ dbname\=UTF8\_test1  ;\
+	echo sql\ \.\.\/test\/UTF8\_test1\.sql  ;\
+	echo library\ \.\.\/  ;\
+	) > ./.cake3/tmp___test_UTF8_test1_in_1
+./.cake3/tmp___lib_in_2: ./Makefile ./UTF8.ur ./UTF8_ffi.h ./UTF8_ffi.o
+	( \
+	echo   ;\
+	echo $$\/list  ;\
+	echo \.\/UTF8  ;\
+	) > ./.cake3/tmp___lib_in_2
+./.cake3/tmp___lib_in_1: ./Makefile ./UTF8.ur ./UTF8_ffi.h ./UTF8_ffi.o
+	( \
+	echo ffi\ \.\/UTF8\_ffi  ;\
+	echo include\ \.\/UTF8\_ffi\.h  ;\
+	echo file\ \/UTF8\_js\/content\ \.\/UTF8\.js  ;\
+	echo script\ \/UTF8\_js\/content  ;\
+	echo jsFunc\ UTF8\_ffi\.strlen\ \=\ utf8\_strlen  ;\
+	echo link\ \.\/UTF8\_ffi\.o  ;\
+	echo link\ \-lstdc\+\+\ \-lutf8proc  ;\
+	) > ./.cake3/tmp___lib_in_1
+.PHONY: ./lib
+./lib: ./Makefile ./lib.urp
+.INTERMEDIATE: ./.fix-multy1
+./.fix-multy1: ./Makefile ./test/UTF8_test1.urp $(call GUARD,URWEB) $(call GUARD,UWFLAGS) $(call GUARD,UWVER)
+	$(URWEB) -dbms sqlite $(UWFLAGS) ./test/UTF8_test1
+./UTF8_ffi.o: ./Makefile ./UTF8_ffi.cpp $(call GUARD,UWCFLAGS) $(call GUARD,UWCPP) $(call GUARD,UWINCLUDE)
+	$(UWCPP) -c $(UWCFLAGS) $(UWINCLUDE) -std=c++11 -o ./UTF8_ffi.o ./UTF8_ffi.cpp
+./lib.urp: ./.cake3/tmp___lib_in_1 ./.cake3/tmp___lib_in_2 ./Makefile
+	cat ./.cake3/tmp___lib_in_1 > ./lib.urp
+	cat ./.cake3/tmp___lib_in_2 >> ./lib.urp
+./test/UTF8_test1.exe: ./.fix-multy1
+./test/UTF8_test1.sql: ./.fix-multy1
+./test/UTF8_test1.urp: ./.cake3/tmp___test_UTF8_test1_in_1 ./.cake3/tmp___test_UTF8_test1_in_2 ./Makefile
+	cat ./.cake3/tmp___test_UTF8_test1_in_1 > ./test/UTF8_test1.urp
+	cat ./.cake3/tmp___test_UTF8_test1_in_2 >> ./test/UTF8_test1.urp
+$(call GUARD,URWEB):
+	rm -f .cake3/GUARD_URWEB_*
 	touch $@
-$(call GUARD,URINCL):
-	rm -f .cake3/GUARD_URINCL_*
+$(call GUARD,UWCFLAGS):
+	rm -f .cake3/GUARD_UWCFLAGS_*
 	touch $@
-$(call GUARD,URVERSION):
-	rm -f .cake3/GUARD_URVERSION_*
+$(call GUARD,UWCPP):
+	rm -f .cake3/GUARD_UWCPP_*
 	touch $@
-$(call GUARD,UR_CFLAGS):
-	rm -f .cake3/GUARD_UR_CFLAGS_*
+$(call GUARD,UWFLAGS):
+	rm -f .cake3/GUARD_UWFLAGS_*
+	touch $@
+$(call GUARD,UWINCLUDE):
+	rm -f .cake3/GUARD_UWINCLUDE_*
+	touch $@
+$(call GUARD,UWVER):
+	rm -f .cake3/GUARD_UWVER_*
 	touch $@
 
 else
@@ -64,33 +85,37 @@ else
 
 ifneq ($(MAKECMDGOALS),clean)
 
-.PHONY: all
-all: .fix-multy1
-.PHONY: ./test/UTF8_test1.exe
-./test/UTF8_test1.exe: .fix-multy1
-.PHONY: ./test/UTF8_test1.urp
-./test/UTF8_test1.urp: .fix-multy1
-.PHONY: .cake3/tmp__testUTF8_test1_in
-.cake3/tmp__testUTF8_test1_in: .fix-multy1
-.PHONY: ./lib.urp
-./lib.urp: .fix-multy1
-.PHONY: .cake3/tmp__lib_in
-.cake3/tmp__lib_in: .fix-multy1
-.PHONY: lib
-lib: .fix-multy1
-.PHONY: ./UTF8_ffi.o
-./UTF8_ffi.o: .fix-multy1
-.PHONY: ./test/UTF8_test1.sql
-./test/UTF8_test1.sql: .fix-multy1
-.INTERMEDIATE: .fix-multy1
-.fix-multy1: 
+.PHONY: ./all
+./all: ./.fix-multy1
+.PHONY: ./.cake3/tmp___test_UTF8_test1_in_2
+./.cake3/tmp___test_UTF8_test1_in_2: ./.fix-multy1
+.PHONY: ./.cake3/tmp___test_UTF8_test1_in_1
+./.cake3/tmp___test_UTF8_test1_in_1: ./.fix-multy1
+.PHONY: ./.cake3/tmp___lib_in_2
+./.cake3/tmp___lib_in_2: ./.fix-multy1
+.PHONY: ./.cake3/tmp___lib_in_1
+./.cake3/tmp___lib_in_1: ./.fix-multy1
+.PHONY: ./lib
+./lib: ./.fix-multy1
+.INTERMEDIATE: ./.fix-multy1
+./.fix-multy1:
 	-mkdir .cake3
 	MAIN=1 $(MAKE) -f ./Makefile $(MAKECMDGOALS)
+.PHONY: ./UTF8_ffi.o
+./UTF8_ffi.o: ./.fix-multy1
+.PHONY: ./lib.urp
+./lib.urp: ./.fix-multy1
+.PHONY: ./test/UTF8_test1.exe
+./test/UTF8_test1.exe: ./.fix-multy1
+.PHONY: ./test/UTF8_test1.sql
+./test/UTF8_test1.sql: ./.fix-multy1
+.PHONY: ./test/UTF8_test1.urp
+./test/UTF8_test1.urp: ./.fix-multy1
 
 endif
-.PHONY: clean
-clean: 
-	-rm ./UTF8_ffi.o ./lib.urp ./test/UTF8_test1.exe ./test/UTF8_test1.sql ./test/UTF8_test1.urp .cake3/tmp__lib_in .cake3/tmp__testUTF8_test1_in
+.PHONY: ./clean
+./clean:
+	-rm ./.cake3/tmp___lib_in_1 ./.cake3/tmp___lib_in_2 ./.cake3/tmp___test_UTF8_test1_in_1 ./.cake3/tmp___test_UTF8_test1_in_2 ./UTF8_ffi.o ./lib.urp ./test/UTF8_test1.exe ./test/UTF8_test1.sql ./test/UTF8_test1.urp
 	-rm -rf .cake3
 
 endif
